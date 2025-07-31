@@ -32,25 +32,19 @@
         }
         .element {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            font-size: 40px;
             cursor: pointer;
             animation: fadeIn 0.5s ease-in-out;
             user-select: none;
             touch-action: none;
-        }
-        .element img {
-            width: 100%;
-            height: 100%;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.5); }
             to { opacity: 1; transform: scale(1); }
         }
         .golden {
-            width: 60px;
-            height: 60px;
-            filter: brightness(1.5);
+            color: gold;
+            font-size: 50px;
         }
         .info {
             display: flex;
@@ -122,12 +116,7 @@
 
         // Настройки игры
         const gameDuration = 30;
-        const elements = [
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Black_Forest_cake.svg/100px-Black_Forest_cake.svg.png', // Тортик
-            'https://upload.wikimedia.org/wikipedia/commons/3/3f/Star_icon_stylized.svg', // Звезда
-            'https://upload.wikimedia.org/wikipedia/commons/4/4f/Heart_icon_red_hollow.svg', // Сердечко
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Cupcake_icon_%28Noun_Project_299105_cc%29.svg/100px-Cupcake_icon_%28Noun_Project_299105_cc%29.svg.png' // Пирожное
-        ];
+        const elements = ['🍰', '⭐', '❤️', '🧁']; // Тортик, Звезда, Сердечко, Пирожное
         const predictions = [
             'Сегодня ты точно заслужил торт!',
             'Твоя удача слаще пирожного!',
@@ -210,10 +199,7 @@
             const element = document.createElement('div');
             element.classList.add('element');
             if (isGolden) element.classList.add('golden');
-
-            const img = document.createElement('img');
-            img.src = elements[Math.floor(Math.random() * elements.length)];
-            element.appendChild(img);
+            element.textContent = elements[Math.floor(Math.random() * elements.length)];
 
             element.style.left = `${Math.random() * 90}%`;
             element.style.top = `${Math.random() * 90}%`;
@@ -263,8 +249,16 @@
             const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
             if (window.Telegram && window.Telegram.WebApp) {
                 Telegram.WebApp.sendData(result);
+            } else if (navigator.share) {
+                // Web Share API для шаринга в соцсетях
+                navigator.share({
+                    title: 'Game of Ladushki',
+                    text: result,
+                    url: window.location.href // Опционально, ссылка на игру
+                }).catch((error) => console.error('Ошибка шаринга:', error));
             } else {
-                alert('Поделитесь: ' + result);
+                // Fallback на alert, если шаринг не поддерживается
+                alert('Поделитесь этим в соцсетях: ' + result);
             }
         });
     </script>
