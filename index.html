@@ -39,9 +39,9 @@
             text-align: center;
             padding: 10px;
             font-size: 24px;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
+            background: linear-gradient(to right, #ffd1e6, #fffacd);
             border-radius: 10px;
-            color: #333; /* Тёмный текст */
+            color: #333;
             font-style: normal;
         }
         .game-area {
@@ -101,14 +101,14 @@
             transition: background-color 0.3s;
             font-family: 'Open Sans', sans-serif;
             font-style: normal;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
-            color: #333; /* Тёмный текст */
+            background: linear-gradient(to right, #ffd1e6, #fffacd);
+            color: #333;
         }
         .styled-text {
             padding: 10px;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
+            background: linear-gradient(to right, #ffd1e6, #fffacd);
             border-radius: 10px;
-            color: #333; /* Тёмный текст */
+            color: #333;
             margin: 10px 0;
             font-size: 18px;
             font-style: normal;
@@ -273,7 +273,7 @@
         const startScreen = document.getElementById('startScreen');
         const info = document.getElementById('info');
         const finalScore = document.getElementById('finalScore');
-        const predictionEl = document.getElementById('endPrediction'); // Изменено на endPrediction для последовательности
+        const predictionEl = document.getElementById('endPrediction');
         const startBtn = document.getElementById('start');
         const restartBtn = document.getElementById('restart');
 
@@ -293,6 +293,8 @@
             endPrediction.textContent = '';
             gameInterval = setInterval(updateTimer, 1000);
             setSpawnRate(1000);
+            // Немедленный спавн для мгновенного старта
+            spawnElement(false);
         }
 
         function updateTimer() {
