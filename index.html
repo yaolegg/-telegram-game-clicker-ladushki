@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game of 'Ladushki'</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             font-style: normal; /* Ensure no italic */
             display: flex;
             flex-direction: column;
@@ -76,6 +76,13 @@
         .start-screen {
             display: block; /* Стартовый экран виден по умолчанию */
         }
+        .start-description {
+            text-align: center;
+            padding: 10px;
+            font-size: 16px;
+            font-style: normal;
+            /* Без подложки, простой текст */
+        }
         button {
             padding: 10px 20px;
             margin: 10px;
@@ -84,7 +91,7 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             font-style: normal;
             background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
             color: white;
@@ -114,7 +121,7 @@
 <body>
     <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
-        <p>Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
+        <p class="start-description">Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
         <button id="start">Ойынды бастау / Начать игру</button>
     </div>
     <div class="info" id="info" style="display: none;">
@@ -172,7 +179,7 @@
         let gameInterval;
         let spawnInterval;
         let goldenCount = 0;
-        let goldenTimes = [10, 20, 25]; // Гарантированные 3 золотых
+        let goldenTimes = [10, 20, 25];
 
         // Класс для рандомайзера предсказаний без повторений
         class PredictionRandomizer {
