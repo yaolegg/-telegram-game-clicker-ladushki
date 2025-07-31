@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game of 'Ladushki'</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Pacifico', cursive;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -38,10 +38,9 @@
             text-align: center;
             padding: 10px;
             font-size: 24px;
-            font-weight: bold;
-            font-family: 'Lobster', cursive;
-            background: rgba(255, 255, 255, 0.2); /* Подложка для читаемости */
+            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
             border-radius: 10px;
+            color: white;
         }
         .game-area {
             position: relative;
@@ -89,11 +88,16 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
-        }
-        .restart-btn {
-            font-family: 'Lobster', cursive;
-            background: linear-gradient(to right, #ffcc00, #ff6699); /* Подложка с градиентом */
+            font-family: 'Pacifico', cursive;
+            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
             color: white;
+        }
+        .styled-text {
+            padding: 10px;
+            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
+            border-radius: 10px;
+            color: white;
+            margin: 10px 0;
             font-size: 18px;
         }
         /* Поддержка тем Telegram */
@@ -105,17 +109,17 @@
             background-color: #1c1c1c;
             color: #ffffff;
         }
-        button.light { background-color: #007bff; color: white; }
-        button.dark { background-color: #0056b3; color: white; }
+        button.light { background: linear-gradient(to right, #ff6699, #ffcc00); color: white; }
+        button.dark { background: linear-gradient(to right, #ff6699, #ffcc00); color: white; }
     </style>
 </head>
 <body>
     <div class="background-scatter" id="scatterBg"></div>
     <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
-        <h2>Добро пожаловать!</h2>
-        <p>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!<br>Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!</p>
-        <button id="start">Начать игру / Ойынды бастау</button>
+        <h2>Қош келдіңіз! / Добро пожаловать!</h2>
+        <p>Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
+        <button id="start">Ойынды бастау / Начать игру</button>
     </div>
     <div class="info" id="info" style="display: none;">
         <span id="timer">30</span>
@@ -123,10 +127,11 @@
     </div>
     <div class="game-area" id="gameArea" style="display: none;"></div>
     <div class="end-screen" id="endScreen">
-        <p>Ваши баллы: / Сіздің ұпайларыңыз: <span id="finalScore"></span></p>
-        <p id="prediction"></p>
-        <button id="restart" class="restart-btn">Ещё сыграем? / Тағы ойнайық па?</button>
-        <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Применить промокод / Промокодты қолдану</button>
+        <p class="styled-text">Сіздің ұпайларыңыз: / Ваши баллы: <span id="finalScore"></span></p>
+        <p id="prediction" class="styled-text"></p>
+        <p id="promo" class="styled-text">Сіздің жеңілдік промокодыңыз тортқа тапсырыс беру үшін "LADTORTY25"! / Твой промокод со скидкой на заказ торта "LADTORTY25"!</p>
+        <button id="restart">Тағы ойнайық па? / Ещё сыграем?</button>
+        <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Промокодты қолдану / Применить промокод</button>
     </div>
 
     <script>
@@ -155,18 +160,31 @@
         const gameDuration = 30;
         const elements = ['🍰', '⭐', '❤️', '🧁']; // Тортик, Звезда, Сердечко, Пирожное
         const predictions = [
-            'Сегодня ты точно заслужил торт!',
-            'Твоя удача слаще пирожного!',
-            'Звезды сулят вкусный день!',
-            'Сердце подсказывает: время для десерта!',
-            'Ты — король тортов сегодня!',
-            'Позитив и сладости ждут тебя!',
-            'Торт — это твой счастливый билет!',
-            'Улыбнись, десерт уже на подходе!',
-            'Ты мастер кликов и сладостей!',
-            'Сегодняшний день — сплошной крем!',
-            'Золотой элемент приносит удачу!',
-            'Пирожные шепчут: ты победитель!'
+            // Модифицированные прошлые с Ladushki (12 штук)
+            'Бүгін сен Ladushki-ден тортқа лайықсың! / Сегодня ты точно заслужил торт от Ladushki!',
+            'Сенің сәттілігің Ladushki пирожныйынан тәтті! / Твоя удача слаще пирожного от Ladushki!',
+            'Жұлдыздар Ladushki-мен дәмді күн уәде етеді! / Звезды сулят вкусный день с Ladushki!',
+            'Жүрек Ladushki десерті уақыты келді деп айтады! / Сердце подсказывает: время для десерта с Ladushki!',
+            'Сен бүгін Ladushki торттарының патшасысың! / Ты — король тортов Ladushki сегодня!',
+            'Позитив және Ladushki тәттіліктері сені күтеді! / Позитив и сладости Ladushki ждут тебя!',
+            'Ladushki торт — бұл сенің бақытты билетің! / Торт Ladushki — это твой счастливый билет!',
+            'Күл, десерт Ladushki жақында! / Улыбнись, десерт Ladushki уже на подходе!',
+            'Сен Ladushki кликтер мен тәттіліктердің шеберісің! / Ты мастер кликов и сладостей Ladushki!',
+            'Бүгінгі күн Ladushki-де толық крем! / Сегодняшний день — сплошной крем с Ladushki!',
+            'Алтын элемент Ladushki-ден сәттілік әкеледі! / Золотой элемент приносит удачу от Ladushki!',
+            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды! / Пирожные шепчут: ты победитель с Ladushki!',
+
+            // 10 новых предсказаний с Ladushki
+            'Ladushki-дің тәтті әлемі сені шақырады! / Сладкий мир Ladushki зовёт тебя!',
+            'Бүгін Ladushki-мен бірге десерттік шытырман! / Сегодня десертное приключение с Ladushki!',
+            'Сенің күнің Ladushki торттарымен жарқырайды! / Твой день засияет с тортами Ladushki!',
+            'Ladushki-дің сиқыры сенің кликтеріңде! / Магия Ladushki в твоих кликах!',
+            'Тәтті жеңіс Ladushki-мен бірге! / Сладкая победа вместе с Ladushki!',
+            'Ladushki-дің жүректері сенің үшін соғады! / Сердечки Ladushki бьются для тебя!',
+            'Бүгінгі сәттілік Ladushki пирожныйларынан! / Удача сегодня из пирожных Ladushki!',
+            'Ladushki-дің жұлдыздары сенің жолыңды жарық етеді! / Звёзды Ladushki осветят твой путь!',
+            'Десерттік армандар Ladushki-мен орындалады! / Десертные мечты сбываются с Ladushki!',
+            'Сен Ladushki-дің ең жақсы ойыншысысың! / Ты лучший игрок Ladushki!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
@@ -174,6 +192,37 @@
         let spawnInterval;
         let goldenCount = 0;
         let goldenTimes = [10, 20, 25]; // Гарантированные 3 золотых для теста; уменьшите до [10,20] если нужно 2
+
+        // Класс для рандомайзера предсказаний без повторений
+        class PredictionRandomizer {
+            constructor(predictions) {
+                this.predictions = predictions;
+                this.available = [];
+                this.reset();
+            }
+
+            reset() {
+                this.available = Array.from({length: this.predictions.length}, (_, i) => i);
+                this.shuffle(this.available);
+            }
+
+            shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            getPrediction() {
+                if (this.available.length === 0) {
+                    this.reset();
+                }
+                const idx = this.available.pop();
+                return this.predictions[idx];
+            }
+        }
+
+        const randomizer = new PredictionRandomizer(predictions);
 
         const gameArea = document.getElementById('gameArea');
         const timerEl = document.getElementById('timer');
@@ -259,8 +308,8 @@
         }
 
         function showPrediction() {
-            const pred = predictions[Math.floor(Math.random() * predictions.length)];
-            predictionEl.textContent = pred + ' Твой промокод со скидкой на заказ торта "LADTORTY25"!';
+            const pred = randomizer.getPrediction();
+            predictionEl.textContent = pred;
             console.log('Предсказание: ' + pred);
         }
 
