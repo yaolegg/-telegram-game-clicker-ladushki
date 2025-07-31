@@ -103,7 +103,7 @@
     </div>
     <div class="game-area" id="gameArea" style="display: none;"></div>
     <div class="end-screen" id="endScreen">
-        <h2>Игра окончена!</h2>
+        <h3>Игра окончена!</h3>
         <p>Ваш счет: <span id="finalScore"></span></p>
         <p id="prediction"></p>
         <button id="restart">Играть снова</button>
@@ -123,10 +123,10 @@
         // Настройки игры
         const gameDuration = 30;
         const elements = [
-            'https://upload.wikimedia.org/wikipedia/commons/1/1e/Cake_icon.svg', // Тортик
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Black_Forest_cake.svg/100px-Black_Forest_cake.svg.png', // Тортик
             'https://upload.wikimedia.org/wikipedia/commons/3/3f/Star_icon_stylized.svg', // Звезда
             'https://upload.wikimedia.org/wikipedia/commons/4/4f/Heart_icon_red_hollow.svg', // Сердечко
-            'https://upload.wikimedia.org/wikipedia/commons/7/7a/Cupcake_icon.svg' // Пирожное
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Cupcake_icon_%28Noun_Project_299105_cc%29.svg/100px-Cupcake_icon_%28Noun_Project_299105_cc%29.svg.png' // Пирожное
         ];
         const predictions = [
             'Сегодня ты точно заслужил торт!',
@@ -134,7 +134,13 @@
             'Звезды сулят вкусный день!',
             'Сердце подсказывает: время для десерта!',
             'Ты — король тортов сегодня!',
-            'Позитив и сладости ждут тебя!'
+            'Позитив и сладости ждут тебя!',
+            'Торт — это твой счастливый билет!',
+            'Улыбнись, десерт уже на подходе!',
+            'Ты мастер кликов и сладостей!',
+            'Сегодняшний день — сплошной крем!',
+            'Золотой элемент приносит удачу!',
+            'Пирожные шепчут: ты победитель!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
@@ -232,7 +238,7 @@
 
         function showPrediction() {
             const pred = predictions[Math.floor(Math.random() * predictions.length)];
-            predictionEl.textContent = pred;
+            predictionEl.textContent = pred + ' Твой промокод со скидкой на заказ торта "LADTORTY25"!';
             console.log('Предсказание: ' + pred);
         }
 
