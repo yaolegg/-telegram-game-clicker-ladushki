@@ -39,9 +39,9 @@
             text-align: center;
             padding: 10px;
             font-size: 24px;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
+            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
             border-radius: 10px;
-            color: white;
+            color: #333; /* Тёмный текст */
             font-style: normal;
         }
         .game-area {
@@ -102,17 +102,20 @@
             transition: background-color 0.3s;
             font-family: 'Open Sans', sans-serif;
             font-style: normal;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
-            color: white;
+            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
+            color: #333; /* Тёмный текст */
         }
         .styled-text {
             padding: 10px;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
+            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
             border-radius: 10px;
-            color: white;
+            color: #333; /* Тёмный текст */
             margin: 10px 0;
             font-size: 18px;
             font-style: normal;
+        }
+        #endScore, #endPrediction, #endFinal {
+            display: none;
         }
         /* Поддержка тем Telegram */
         body.light {
@@ -123,32 +126,16 @@
             background-color: #1c1c1c;
             color: #ffffff;
         }
-        button.light { background: linear-gradient(to right, #ff6699, #ffcc00); color: white; }
-        button.dark { background: linear-gradient(to right, #ff6699, #ffcc00); color: white; }
+        button.light { background: linear-gradient(to right, #ffd1e6, #fffacd); color: #333; }
+        button.dark { background: linear-gradient(to right, #ffd1e6, #fffacd); color: #333; }
     </style>
 </head>
 <body>
-    <div class="background-scatter">
-        <!-- 10 пирожных/тортиков разного размера в разброс -->
-        <div class="scatter-item" style="font-size: 48px; left: 13%; top: 37%;">🍰</div>
-        <div class="scatter-item" style="font-size: 32px; left: 27%; top: 67%;">🧁</div>
-        <div class="scatter-item" style="font-size: 31px; left: 49%; top: 26%;">🧁</div>
-        <div class="scatter-item" style="font-size: 32px; left: 30%; top: 5%;">🍰</div>
-        <div class="scatter-item" style="font-size: 42px; left: 8%; top: 49%;">🍰</div>
-        <div class="scatter-item" style="font-size: 57px; left: 77%; top: 51%;">🧁</div>
-        <div class="scatter-item" style="font-size: 42px; left: 48%; top: 40%;">🍰</div>
-        <div class="scatter-item" style="font-size: 40px; left: 57%; top: 65%;">🧁</div>
-        <div class="scatter-item" style="font-size: 57px; left: 73%; top: 57%;">🧁</div>
-        <div class="scatter-item" style="font-size: 47px; left: 43%; top: 52%;">🍰</div>
-        <!-- 3 надписи "I❤️Ladushki!" разного размера в разброс -->
-        <div class="scatter-item" style="font-size: 54px; left: 27%; top: 50%;">I❤️Ladushki!</div>
-        <div class="scatter-item" style="font-size: 34px; left: 84%; top: 1%;">I❤️Ladushki!</div>
-        <div class="scatter-item" style="font-size: 36px; left: 83%; top: 44%;">I❤️Ladushki!</div>
-    </div>
-    <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
+    <div class="background-scatter" id="scatterBg"></div>
+    <div class="header">Ladushkiпен дәмді!<br>С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
         <p class="start-description">Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
-        <button id="start">Ойынды бастау / Начать игру</button>
+        <button id="start">Ойынды бастау<br>Начать игру</button>
     </div>
     <div class="info" id="info" style="display: none;">
         <span id="timer">30</span>
@@ -156,14 +143,53 @@
     </div>
     <div class="game-area" id="gameArea" style="display: none;"></div>
     <div class="end-screen" id="endScreen">
-        <p class="styled-text">Сіздің ұпайларыңыз: / Ваши баллы: <span id="finalScore"></span></p>
-        <p id="prediction" class="styled-text"></p>
-        <p id="promo" class="styled-text">Сіздің жеңілдік промокодыңыз тортқа тапсырыс беру үшін "LADTORTY25"! / Твой промокод со скидкой на заказ торта "LADTORTY25"!</p>
-        <button id="restart">Тағы ойнайық па? / Ещё сыграем?</button>
-        <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Промокодты қолдану / Применить промокод</button>
+        <p id="endScore" class="styled-text">Сіздің ұпайларыңыз:<br>Ваши баллы: <span id="finalScore"></span></p>
+        <p id="endPrediction" class="styled-text"></p>
+        <div id="endFinal" style="display: none;">
+            <p class="styled-text" id="promo">Сіздің жеңілдік промокодыңыз тортқа тапсырыс беру үшін "LADTORTY25"!<br>Твой промокод со скидкой на заказ торта "LADTORTY25"!</p>
+            <button id="restart">Тағы ойнайық па?<br>Ещё сыграем?</button>
+            <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Промокодты қолдану<br>Применить промокод</button>
+        </div>
     </div>
 
     <script>
+        // Динамическая генерация фона на загрузке
+        const scatterBg = document.getElementById('scatterBg');
+        const cakeCupcakeCount = 10;
+        const textCount = 3;
+        const cakeCupcakeEmojis = ['🍰', '🧁'];
+        const textEmoji = 'I❤️Ladushki!';
+
+        function randomPercent() {
+            return Math.random() * 90 + 5 + '%';
+        }
+
+        function randomSize(min, max) {
+            return Math.floor(Math.random() * (max - min) + min) + 'px';
+        }
+
+        // Add cakes & cupcakes
+        for (let i = 0; i < cakeCupcakeCount; i++) {
+            const item = document.createElement('div');
+            item.className = 'scatter-item';
+            item.textContent = cakeCupcakeEmojis[Math.floor(Math.random() * cakeCupcakeEmojis.length)];
+            item.style.left = randomPercent();
+            item.style.top = randomPercent();
+            item.style.fontSize = randomSize(30, 60);
+            scatterBg.appendChild(item);
+        }
+
+        // Add 'I❤️Ladushki!' texts
+        for (let i = 0; i < textCount; i++) {
+            const item = document.createElement('div');
+            item.className = 'scatter-item';
+            item.textContent = textEmoji;
+            item.style.left = randomPercent();
+            item.style.top = randomPercent();
+            item.style.fontSize = randomSize(20, 40);
+            scatterBg.appendChild(item);
+        }
+
         // Инициализация Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
             Telegram.WebApp.ready();
@@ -177,28 +203,28 @@
         const gameDuration = 30;
         const elements = ['🍰', '⭐', '❤️', '🧁'];
         const predictions = [
-            'Бүгін сен Ladushki-ден тортқа лайықсың! / Сегодня ты точно заслужил торт от Ladushki!',
-            'Сенің сәттілігің Ladushki пирожныйынан тәтті! / Твоя удача слаще пирожного от Ladushki!',
-            'Жұлдыздар Ladushki-мен дәмді күн уәде етеді! / Звезды сулят вкусный день с Ladushki!',
-            'Жүрек Ladushki десерті уақыты келді деп айтады! / Сердце подсказывает: время для десерта с Ladushki!',
-            'Сен бүгін Ladushki торттарының патшасысың! / Ты — король тортов Ladushki сегодня!',
-            'Позитив және Ladushki тәттіліктері сені күтеді! / Позитив и сладости Ladushki ждут тебя!',
-            'Ladushki торт — бұл сенің бақытты билетің! / Торт Ladushki — это твой счастливый билет!',
-            'Күл, десерт Ladushki жақында! / Улыбнись, десерт Ladushki уже на подходе!',
-            'Сен Ladushki кликтер мен тәттіліктердің шеберісің! / Ты мастер кликов и сладостей Ladushki!',
-            'Бүгінгі күн Ladushki-де толық крем! / Сегодняшний день — сплошной крем с Ladushki!',
-            'Алтын элемент Ladushki-ден сәттілік әкеледі! / Золотой элемент приносит удачу от Ladushki!',
-            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды! / Пирожные шепчут: ты победитель с Ladushki!',
-            'Ladushki-дің тәтті әлемі сені шақырады! / Сладкий мир Ladushki зовёт тебя!',
-            'Бүгін Ladushki-мен бірге десерттік шытырман! / Сегодня десертное приключение с Ladushki!',
-            'Сенің күнің Ladushki торттарымен жарқырайды! / Твой день засияет с тортами Ladushki!',
-            'Ladushki-дің сиқыры сенің кликтеріңде! / Магия Ladushki в твоих кликах!',
-            'Тәтті жеңіс Ladushki-мен бірге! / Сладкая победа вместе с Ladushki!',
-            'Ladushki-дің жүректері сенің үшін соғады! / Сердечки Ladushki бьются для тебя!',
-            'Бүгінгі сәттілік Ladushki пирожныйларынан! / Удача сегодня из пирожных Ladushki!',
-            'Ladushki-дің жұлдыздары сенің жолыңды жарық етеді! / Звёзды Ladushki осветят твой путь!',
-            'Десерттік армандар Ladushki-мен орындалады! / Десертные мечты сбываются с Ladushki!',
-            'Сен Ladushki-дің ең жақсы ойыншысысың! / Ты лучший игрок Ladushki!'
+            'Бүгін сен Ladushki-ден тортқа лайықсың!<br>Сегодня ты точно заслужил торт от Ladushki!',
+            'Сенің сәттілігің Ladushki пирожныйынан тәтті!<br>Твоя удача слаще пирожного от Ladushki!',
+            'Жұлдыздар Ladushki-мен дәмді күн уәде етеді!<br>Звезды сулят вкусный день с Ladushki!',
+            'Жүрек Ladushki десерті уақыты келді деп айтады!<br>Сердце подсказывает: время для десерта с Ladushki!',
+            'Сен бүгін Ladushki торттарының патшасысың!<br>Ты — король тортов Ladushki сегодня!',
+            'Позитив және Ladushki тәттіліктері сені күтеді!<br>Позитив и сладости Ladushki ждут тебя!',
+            'Ladushki торт — бұл сенің бақытты билетің!<br>Торт Ladushki — это твой счастливый билет!',
+            'Күл, десерт Ladushki жақында!<br>Улыбнись, десерт Ladushki уже на подходе!',
+            'Сен Ladushki кликтер мен тәттіліктердің шеберісің!<br>Ты мастер кликов и сладостей Ladushki!',
+            'Бүгінгі күн Ladushki-де толық крем!<br>Сегодняшний день — сплошной крем с Ladushki!',
+            'Алтын элемент Ladushki-ден сәттілік әкеледі!<br>Золотой элемент приносит удачу от Ladushki!',
+            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды!<br>Пирожные шепчут: ты победитель с Ladushki!',
+            'Ladushki-дің тәтті әлемі сені шақырады!<br>Сладкий мир Ladushki зовёт тебя!',
+            'Бүгін Ladushki-мен бірге десерттік шытырман!<br>Сегодня десертное приключение с Ladushki!',
+            'Сенің күнің Ladushki торттарымен жарқырайды!<br>Твой день засияет с тортами Ladushki!',
+            'Ladushki-дің сиқыры сенің кликтеріңде!<br>Магия Ladushki в твоих кликах!',
+            'Тәтті жеңіс Ladushki-мен бірге!<br>Сладкая победа вместе с Ladushki!',
+            'Ladushki-дің жүректері сенің үшін соғады!<br>Сердечки Ladushki бьются для тебя!',
+            'Бүгінгі сәттілік Ladushki пирожныйларынан!<br>Удача сегодня из пирожных Ladushki!',
+            'Ladushki-дің жұлдыздары сенің жолыңды жарық етеді!<br>Звёзды Ladushki осветят твой путь!',
+            'Десерттік армандар Ladushki-мен орындалады!<br>Десертные мечты сбываются с Ladushki!',
+            'Сен Ladushki-дің ең жақсы ойыншысысың!<br>Ты лучший игрок Ladushki!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
@@ -242,6 +268,9 @@
         const timerEl = document.getElementById('timer');
         const scoreEl = document.getElementById('score');
         const endScreen = document.getElementById('endScreen');
+        const endScore = document.getElementById('endScore');
+        const endPrediction = document.getElementById('endPrediction');
+        const endFinal = document.getElementById('endFinal');
         const startScreen = document.getElementById('startScreen');
         const info = document.getElementById('info');
         const finalScore = document.getElementById('finalScore');
@@ -333,8 +362,24 @@
             gameArea.style.display = 'none';
             info.style.display = 'none';
             finalScore.textContent = score;
-            if (!predictionEl.textContent) showPrediction();
             endScreen.style.display = 'block';
+
+            // Последовательная анимация
+            endScore.style.display = 'block';
+            endPrediction.style.display = 'none';
+            endFinal.style.display = 'none';
+
+            setTimeout(() => {
+                showPrediction(); // Генерируем пожелание
+                endScore.style.display = 'none';
+                endPrediction.style.display = 'block';
+            }, 3000); // 3 секунды на баллы
+
+            setTimeout(() => {
+                endPrediction.style.display = 'none';
+                endFinal.style.display = 'block';
+            }, 6000); // Ещё 3 секунды на пожелание (общее 6 сек от старта)
+
             console.log('Игра окончена, финальный экран показан');
         }
 
