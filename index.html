@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Open Sans', sans-serif;
-            font-style: normal; /* Ensure no italic */
+            font-style: normal;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,6 +20,7 @@
             transition: background-color 0.3s, color 0.3s;
             touch-action: manipulation;
             position: relative;
+            background: linear-gradient(to bottom, #ffe4e1, #fff5ee); /* Пастельный градиент для десертной темы */
         }
         .background-scatter {
             position: absolute;
@@ -32,17 +33,24 @@
         }
         .scatter-item {
             position: absolute;
-            opacity: 0.1;
+            opacity: 0.05; /* Ещё менее заметно, чтобы не рябило */
             font-style: normal;
+            animation: float 5s infinite ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
         .header {
             text-align: center;
             padding: 10px;
             font-size: 24px;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
             border-radius: 10px;
-            color: #333; /* Тёмный текст */
+            color: #333;
             font-style: normal;
+            animation: fadeIn 1s ease;
         }
         .game-area {
             position: relative;
@@ -59,13 +67,14 @@
             touch-action: none;
             font-style: normal;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 1; transform: scale(1); }
-        }
         .golden {
-            color: gold;
+            color: #ffd700;
             font-size: 50px;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px gold; }
+            to { text-shadow: 0 0 10px gold; }
         }
         .info {
             display: flex;
@@ -83,14 +92,13 @@
             font-style: normal;
         }
         .start-screen {
-            display: block; /* Стартовый экран виден по умолчанию */
+            display: block;
         }
         .start-description {
             text-align: center;
             padding: 10px;
             font-size: 16px;
             font-style: normal;
-            /* Без подложки, простой текст */
         }
         button {
             padding: 10px 20px;
@@ -102,32 +110,33 @@
             transition: background-color 0.3s;
             font-family: 'Open Sans', sans-serif;
             font-style: normal;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
-            color: #333; /* Тёмный текст */
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
+            color: #333;
         }
         .styled-text {
             padding: 10px;
-            background: linear-gradient(to right, #ffd1e6, #fffacd); /* Обновлённая подложка */
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
             border-radius: 10px;
-            color: #333; /* Тёмный текст */
+            color: #333;
             margin: 10px 0;
             font-size: 18px;
             font-style: normal;
+            animation: fadeIn 1s ease;
         }
         #endScore, #endPrediction, #endFinal {
             display: none;
         }
         /* Поддержка тем Telegram */
         body.light {
-            background-color: #ffffff;
-            color: #000000;
+            background: linear-gradient(to bottom, #ffe4e1, #fff5ee);
+            color: #333;
         }
         body.dark {
-            background-color: #1c1c1c;
-            color: #ffffff;
+            background: linear-gradient(to bottom, #4b0082, #2f4f4f);
+            color: #fff;
         }
-        button.light { background: linear-gradient(to right, #ffd1e6, #fffacd); color: #333; }
-        button.dark { background: linear-gradient(to right, #ffd1e6, #fffacd); color: #333; }
+        button.light { background: linear-gradient(to right, #ffc0cb, #ffd700); color: #333; }
+        button.dark { background: linear-gradient(to right, #4b0082, #2f4f4f); color: #fff; }
     </style>
 </head>
 <body>
@@ -378,16 +387,6 @@
             setTimeout(() => {
                 endPrediction.style.display = 'none';
                 endFinal.style.display = 'block';
-            }, 6000); // Ещё 3 секунды на пожелание (общее 6 сек от старта)
+            }, 6000); // Ещё 3 секунды на пожелание
 
-            console.log('Игра окончена, финальный экран показан');
-        }
-
-        startBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', () => {
-            startScreen.style.display = 'block';
-            endScreen.style.display = 'none';
-        });
-    </script>
-</body>
-</html>
+            console.log('Игра оконч
