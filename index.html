@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
+            font-style: normal; /* Ensure no italic */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,20 +20,15 @@
             transition: background-color 0.3s, color 0.3s;
             touch-action: manipulation;
             position: relative;
-        }
-        .background-scatter {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        .scatter-item {
-            position: absolute;
-            font-size: 30px;
-            opacity: 0.1;
+            background-color: #fff;
+            /* Static background pattern with cakes, cupcakes, and "I❤️Ladushki!" text */
+            background-image: 
+                url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E %3Ctext x="10" y="50" font-size="40" opacity="0.15"%3E%F0%9F%8D%B0 %F0%9F%8E%82 I%E2%9D%A4%EF%B8%8FLadushki!%3C/text%3E %3C/svg%3E'),
+                url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"%3E %3Ctext x="0" y="40" font-size="40" opacity="0.15"%3E%F0%9F%8D%B0%3C/text%3E %3C/svg%3E'),
+                url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"%3E %3Ctext x="0" y="40" font-size="40" opacity="0.15"%3E%F0%9F%8E%82%3C/text%3E %3C/svg%3E');
+            background-repeat: repeat;
+            background-position: 0 0, 20px 20px, 40px 40px;
+            background-size: 200px 200px, 50px 50px, 50px 50px;
         }
         .header {
             text-align: center;
@@ -41,6 +37,7 @@
             background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
             border-radius: 10px;
             color: white;
+            font-style: normal; /* no italic */
         }
         .game-area {
             position: relative;
@@ -55,6 +52,7 @@
             animation: fadeIn 0.5s ease-in-out;
             user-select: none;
             touch-action: none;
+            font-style: normal; /* no italic */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.5); }
@@ -70,12 +68,14 @@
             width: 90%;
             padding: 10px;
             font-size: 18px;
+            font-style: normal; /* no italic */
         }
         .end-screen, .start-screen {
             display: none;
             text-align: center;
             padding: 20px;
             transition: display 0.3s;
+            font-style: normal; /* no italic */
         }
         .start-screen {
             display: block; /* Стартовый экран виден по умолчанию */
@@ -89,6 +89,7 @@
             border-radius: 5px;
             transition: background-color 0.3s;
             font-family: 'Roboto', sans-serif;
+            font-style: normal; /* no italic */
             background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
             color: white;
         }
@@ -99,6 +100,7 @@
             color: white;
             margin: 10px 0;
             font-size: 18px;
+            font-style: normal; /* no italic */
         }
         /* Поддержка тем Telegram */
         body.light {
@@ -114,7 +116,6 @@
     </style>
 </head>
 <body>
-    <div class="background-scatter" id="scatterBg"></div>
     <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
         <p>Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
@@ -159,7 +160,6 @@
         const gameDuration = 30;
         const elements = ['🍰', '⭐', '❤️', '🧁']; // Тортик, Звезда, Сердечко, Пирожное
         const predictions = [
-            // Модифицированные прошлые с Ladushki (12 штук)
             'Бүгін сен Ladushki-ден тортқа лайықсың! / Сегодня ты точно заслужил торт от Ladushki!',
             'Сенің сәттілігің Ladushki пирожныйынан тәтті! / Твоя удача слаще пирожного от Ladushki!',
             'Жұлдыздар Ladushki-мен дәмді күн уәде етеді! / Звезды сулят вкусный день с Ladushki!',
@@ -171,57 +171,14 @@
             'Сен Ladushki кликтер мен тәттіліктердің шеберісің! / Ты мастер кликов и сладостей Ladushki!',
             'Бүгінгі күн Ladushki-де толық крем! / Сегодняшний день — сплошной крем с Ladushki!',
             'Алтын элемент Ladushki-ден сәттілік әкеледі! / Золотой элемент приносит удачу от Ladushki!',
-            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды! / Пирожные шепчут: ты победитель с Ladushki!',
-
-            // 10 новых предсказаний с Ladushki
-            'Ladushki-дің тәтті әлемі сені шақырады! / Сладкий мир Ladushki зовёт тебя!',
-            'Бүгін Ladushki-мен бірге десерттік шытырман! / Сегодня десертное приключение с Ladushki!',
-            'Сенің күнің Ladushki торттарымен жарқырайды! / Твой день засияет с тортами Ladushki!',
-            'Ladushki-дің сиқыры сенің кликтеріңде! / Магия Ladushki в твоих кликах!',
-            'Тәтті жеңіс Ladushki-мен бірге! / Сладкая победа вместе с Ladushki!',
-            'Ladushki-дің жүректері сенің үшін соғады! / Сердечки Ladushki бьются для тебя!',
-            'Бүгінгі сәттілік Ladushki пирожныйларынан! / Удача сегодня из пирожных Ladushki!',
-            'Ladushki-дің жұлдыздары сенің жолыңды жарық етеді! / Звёзды Ladushki осветят твой путь!',
-            'Десерттік армандар Ladushki-мен орындалады! / Десертные мечты сбываются с Ladushki!',
-            'Сен Ladushki-дің ең жақсы ойыншысысың! / Ты лучший игрок Ladushki!'
+            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды! / Пирожные шепчут: ты победитель с Ladushki!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
         let gameInterval;
         let spawnInterval;
         let goldenCount = 0;
-        let goldenTimes = [10, 20, 25]; // Гарантированные 3 золотых для теста; уменьшите до [10,20] если нужно 2
-
-        // Класс для рандомайзера предсказаний без повторений
-        class PredictionRandomizer {
-            constructor(predictions) {
-                this.predictions = predictions;
-                this.available = [];
-                this.reset();
-            }
-
-            reset() {
-                this.available = Array.from({length: this.predictions.length}, (_, i) => i);
-                this.shuffle(this.available);
-            }
-
-            shuffle(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-            }
-
-            getPrediction() {
-                if (this.available.length === 0) {
-                    this.reset();
-                }
-                const idx = this.available.pop();
-                return this.predictions[idx];
-            }
-        }
-
-        const randomizer = new PredictionRandomizer(predictions);
+        let goldenTimes = [10, 20, 25];
 
         const gameArea = document.getElementById('gameArea');
         const timerEl = document.getElementById('timer');
@@ -235,11 +192,10 @@
         const restartBtn = document.getElementById('restart');
 
         function startGame() {
-            console.log('Игра начата');
             score = 0;
             timeLeft = gameDuration;
             goldenCount = 0;
-            goldenTimes = [10, 20, 25]; // Сброс
+            goldenTimes = [10, 20, 25];
             scoreEl.textContent = score;
             timerEl.textContent = timeLeft;
             endScreen.style.display = 'none';
@@ -264,10 +220,8 @@
             const spawnDelay = 1000 - (progress * 750);
             setSpawnRate(spawnDelay);
 
-            // Гарантированный спавн золотых
             if (goldenTimes.includes(elapsed) && goldenCount < goldenTimes.length) {
                 spawnElement(true);
-                console.log('Золотой элемент спавнен на ' + elapsed + ' сек');
             }
         }
 
@@ -307,9 +261,8 @@
         }
 
         function showPrediction() {
-            const pred = randomizer.getPrediction();
+            const pred = predictions[Math.floor(Math.random() * predictions.length)];
             predictionEl.textContent = pred;
-            console.log('Предсказание: ' + pred);
         }
 
         function endGame() {
@@ -321,7 +274,6 @@
             finalScore.textContent = score;
             if (!predictionEl.textContent) showPrediction();
             endScreen.style.display = 'block';
-            console.log('Игра окончена, финальный экран показан');
         }
 
         startBtn.addEventListener('click', startGame);
