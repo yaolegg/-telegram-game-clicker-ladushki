@@ -17,6 +17,16 @@
             overflow: hidden;
             transition: background-color 0.3s, color 0.3s;
             touch-action: manipulation;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="50" font-size="30" opacity="0.1">🍰❤️</text></svg>');
+            background-repeat: repeat;
+            background-size: 100px 100px;
+        }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            font-size: 20px;
+            opacity: 0.3;
+            color: inherit;
         }
         .header {
             text-align: center;
@@ -85,11 +95,11 @@
     </style>
 </head>
 <body>
-    <div class="header">Game of 'Ladushki'</div>
-    <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Выбери свой торт</button>
+    <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
         <h2>Добро пожаловать!</h2>
-        <button id="start">Начать игру</button>
+        <p>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!<br>Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!</p>
+        <button id="start">Начать игру / Ойынды бастау</button>
     </div>
     <div class="info" id="info" style="display: none;">
         <span id="timer">30</span>
@@ -101,8 +111,9 @@
         <p>Ваш счет: <span id="finalScore"></span></p>
         <p id="prediction"></p>
         <button id="restart">Играть снова</button>
-        <button id="share">Поделиться</button>
+        <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Выбери свой торт</button>
     </div>
+    <div class="watermark">Ladushki</div>
 
     <script>
         // Инициализация Telegram Web App
@@ -148,7 +159,6 @@
         const predictionEl = document.getElementById('prediction');
         const startBtn = document.getElementById('start');
         const restartBtn = document.getElementById('restart');
-        const shareBtn = document.getElementById('share');
 
         function startGame() {
             console.log('Игра начата');
@@ -244,22 +254,6 @@
         restartBtn.addEventListener('click', () => {
             startScreen.style.display = 'block';
             endScreen.style.display = 'none';
-        });
-        shareBtn.addEventListener('click', () => {
-            const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(result);
-            } else if (navigator.share) {
-                // Web Share API для шаринга в соцсетях
-                navigator.share({
-                    title: 'Game of Ladushki',
-                    text: result,
-                    url: window.location.href // Опционально, ссылка на игру
-                }).catch((error) => console.error('Ошибка шаринга:', error));
-            } else {
-                // Fallback на alert, если шаринг не поддерживается
-                alert('Поделитесь этим в соцсетях: ' + result);
-            }
         });
     </script>
 </body>
