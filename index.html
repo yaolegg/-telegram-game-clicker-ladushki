@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game of 'Ladushki'</title>
     <style>
         body {
@@ -32,17 +32,26 @@
         }
         .element {
             position: absolute;
-            font-size: 40px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             animation: fadeIn 0.5s ease-in-out;
             user-select: none;
             touch-action: none;
         }
+        .element img {
+            width: 100%;
+            height: 100%;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.5); }
             to { opacity: 1; transform: scale(1); }
         }
-        .golden { color: gold; font-size: 50px; }
+        .golden {
+            width: 60px;
+            height: 60px;
+            filter: brightness(1.5); /* Для "золотого" эффекта */
+        }
         .info {
             display: flex;
             justify-content: space-between;
@@ -99,25 +108,35 @@
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
             const theme = Telegram.WebApp.colorScheme;
-            document.body.classList.add(theme); // light или dark
+            document.body.classList.add(theme);
             document.querySelectorAll('button').forEach(btn => btn.classList.add(theme));
         }
 
         // Настройки игры
-        const gameDuration = 30; // секунды
-        const elements = ['🍰', '⭐', '❤️', '🧁'];
+        const gameDuration = 30;
+        const elements = [
+            'https://upload.wikimedia.org/wikipedia/commons/1/1e/Cake_icon.svg', // Тортик
+            'https://upload.wikimedia.org/wikipedia/commons/3/3f/Star_icon_stylized.svg', // Звезда
+            'https://upload.wikimedia.org/wikipedia/commons/4/4f/Heart_icon_red_hollow.svg', // Сердечко
+            'https://upload.wikimedia.org/wikipedia/commons/7/7a/Cupcake_icon.svg' // Пирожное
+        ];
         const predictions = [
             'Сегодня ты точно заслужил торт!',
             'Твоя удача слаще пирожного!',
             'Звезды сулят вкусный день!',
-            'Сердце подсказывает: время для десерта!'
+            'Сердце подсказывает: время для десерта!',
+            'Ты — король тортов сегодня!',
+            'Позитив и сладости ждут тебя!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
         let gameInterval;
         let spawnInterval;
         let goldenCount = 0;
+        const minGoldens = 2;
         const maxGoldens = 3;
+        let goldenTimes = [10, 20]; // Фиксированные секунды для минимум 2 золотых
+        if (Math.random() > 0.5) goldenTimes.push(25); // Шанс на третий
 
         const gameArea = document.getElementById('gameArea');
         const timerEl = document.getElementById('timer');
@@ -132,12 +151,14 @@
             score = 0;
             timeLeft = gameDuration;
             goldenCount = 0;
+            goldenTimes = [10, 20];
+            if (Math.random() > 0.5) goldenTimes.push(25);
             scoreEl.textContent = score;
             timerEl.textContent = timeLeft;
             endScreen.style.display = 'none';
             gameArea.innerHTML = '';
             gameInterval = setInterval(updateTimer, 1000);
-            setSpawnRate(1000); // Начальная скорость: 1 элемент/сек
+            setSpawnRate(1000); // Начальная скорость
         }
 
         function updateTimer() {
@@ -145,33 +166,43 @@
             timerEl.textContent = timeLeft;
             if (timeLeft <= 0) {
                 endGame();
+                return;
             }
-            // Увеличение скорости: от 1/сек до 3-4/сек
+            // Увеличение скорости
             const progress = (gameDuration - timeLeft) / gameDuration;
-            const spawnDelay = 1000 - (progress * 750); // От 1000мс до ~250мс (4/сек)
+            const spawnDelay = 1000 - (progress * 750);
             setSpawnRate(spawnDelay);
+
+            // Гарантированный спавн золотых
+            if (goldenTimes.includes(gameDuration - timeLeft) && goldenCount < maxGoldens) {
+                spawnElement(true);
+            }
         }
 
         function setSpawnRate(delay) {
             clearInterval(spawnInterval);
-            spawnInterval = setInterval(spawnElement, delay);
+            spawnInterval = setInterval(() => spawnElement(false), delay);
         }
 
-        function spawnElement() {
-            const isGolden = Math.random() < 0.1 && goldenCount < maxGoldens; // Шанс 10%, лимит 2-3
+        function spawnElement(forceGolden = false) {
+            const isGolden = forceGolden || (Math.random() < 0.05 && goldenCount < maxGoldens);
             if (isGolden) goldenCount++;
 
             const element = document.createElement('div');
             element.classList.add('element');
             if (isGolden) element.classList.add('golden');
-            element.textContent = elements[Math.floor(Math.random() * elements.length)];
+
+            const img = document.createElement('img');
+            img.src = elements[Math.floor(Math.random() * elements.length)];
+            element.appendChild(img);
+
             element.style.left = `${Math.random() * 90}%`;
             element.style.top = `${Math.random() * 90}%`;
 
             element.addEventListener('click', () => {
                 if (isGolden) {
                     score += 50;
-                    showPrediction();
+                    showPrediction(); // Показать предсказание при клике
                 } else {
                     score += 10;
                 }
@@ -189,13 +220,15 @@
 
         function showPrediction() {
             const pred = predictions[Math.floor(Math.random() * predictions.length)];
-            predictionEl.textContent = pred; // Показываем на финальном экране
+            predictionEl.textContent = pred;
         }
 
         function endGame() {
             clearInterval(gameInterval);
             clearInterval(spawnInterval);
+            gameArea.innerHTML = ''; // Очистка всех элементов
             finalScore.textContent = score;
+            if (!predictionEl.textContent) showPrediction(); // Всегда показывать предсказание в конце
             endScreen.style.display = 'block';
         }
 
@@ -203,13 +236,13 @@
         shareBtn.addEventListener('click', () => {
             const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
             if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(result); // Отправка результата боту для分享
+                Telegram.WebApp.sendData(result);
             } else {
-                alert('Поделитесь: ' + result); // Fallback
+                alert('Поделитесь: ' + result);
             }
         });
 
-        // Старт игры при загрузке
+        // Старт игры
         startGame();
     </script>
 </body>
