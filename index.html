@@ -16,7 +16,7 @@
             height: 100vh;
             overflow: hidden;
             transition: background-color 0.3s, color 0.3s;
-            touch-action: manipulation; /* Оптимизация для сенсорных экранов */
+            touch-action: manipulation;
         }
         .header {
             text-align: center;
@@ -50,7 +50,7 @@
         .golden {
             width: 60px;
             height: 60px;
-            filter: brightness(1.5); /* Для "золотого" эффекта */
+            filter: brightness(1.5);
         }
         .info {
             display: flex;
@@ -59,10 +59,14 @@
             padding: 10px;
             font-size: 18px;
         }
-        .end-screen {
+        .end-screen, .start-screen {
             display: none;
             text-align: center;
             padding: 20px;
+            transition: display 0.3s;
+        }
+        .start-screen {
+            display: block; /* Стартовый экран виден по умолчанию */
         }
         button {
             padding: 10px 20px;
@@ -89,11 +93,15 @@
 <body>
     <div class="header">Game of 'Ladushki'</div>
     <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Выбери свой торт</button>
-    <div class="info">
+    <div class="start-screen" id="startScreen">
+        <h2>Добро пожаловать!</h2>
+        <button id="start">Начать игру</button>
+    </div>
+    <div class="info" id="info" style="display: none;">
         <span id="timer">30</span>
         <span id="score">0</span>
     </div>
-    <div class="game-area" id="gameArea"></div>
+    <div class="game-area" id="gameArea" style="display: none;"></div>
     <div class="end-screen" id="endScreen">
         <h2>Игра окончена!</h2>
         <p>Ваш счет: <span id="finalScore"></span></p>
@@ -133,32 +141,36 @@
         let gameInterval;
         let spawnInterval;
         let goldenCount = 0;
-        const minGoldens = 2;
-        const maxGoldens = 3;
-        let goldenTimes = [10, 20]; // Фиксированные секунды для минимум 2 золотых
-        if (Math.random() > 0.5) goldenTimes.push(25); // Шанс на третий
+        let goldenTimes = [10, 20, 25]; // Гарантированные 3 золотых для теста; уменьшите до [10,20] если нужно 2
 
         const gameArea = document.getElementById('gameArea');
         const timerEl = document.getElementById('timer');
         const scoreEl = document.getElementById('score');
         const endScreen = document.getElementById('endScreen');
+        const startScreen = document.getElementById('startScreen');
+        const info = document.getElementById('info');
         const finalScore = document.getElementById('finalScore');
         const predictionEl = document.getElementById('prediction');
+        const startBtn = document.getElementById('start');
         const restartBtn = document.getElementById('restart');
         const shareBtn = document.getElementById('share');
 
         function startGame() {
+            console.log('Игра начата');
             score = 0;
             timeLeft = gameDuration;
             goldenCount = 0;
-            goldenTimes = [10, 20];
-            if (Math.random() > 0.5) goldenTimes.push(25);
+            goldenTimes = [10, 20, 25]; // Сброс
             scoreEl.textContent = score;
             timerEl.textContent = timeLeft;
             endScreen.style.display = 'none';
+            startScreen.style.display = 'none';
+            info.style.display = 'flex';
+            gameArea.style.display = 'block';
             gameArea.innerHTML = '';
+            predictionEl.textContent = '';
             gameInterval = setInterval(updateTimer, 1000);
-            setSpawnRate(1000); // Начальная скорость
+            setSpawnRate(1000);
         }
 
         function updateTimer() {
@@ -168,14 +180,15 @@
                 endGame();
                 return;
             }
-            // Увеличение скорости
-            const progress = (gameDuration - timeLeft) / gameDuration;
+            const elapsed = gameDuration - timeLeft;
+            const progress = elapsed / gameDuration;
             const spawnDelay = 1000 - (progress * 750);
             setSpawnRate(spawnDelay);
 
             // Гарантированный спавн золотых
-            if (goldenTimes.includes(gameDuration - timeLeft) && goldenCount < maxGoldens) {
+            if (goldenTimes.includes(elapsed) && goldenCount < goldenTimes.length) {
                 spawnElement(true);
+                console.log('Золотой элемент спавнен на ' + elapsed + ' сек');
             }
         }
 
@@ -185,7 +198,7 @@
         }
 
         function spawnElement(forceGolden = false) {
-            const isGolden = forceGolden || (Math.random() < 0.05 && goldenCount < maxGoldens);
+            const isGolden = forceGolden || (Math.random() < 0.1 && goldenCount < goldenTimes.length);
             if (isGolden) goldenCount++;
 
             const element = document.createElement('div');
@@ -202,7 +215,7 @@
             element.addEventListener('click', () => {
                 if (isGolden) {
                     score += 50;
-                    showPrediction(); // Показать предсказание при клике
+                    showPrediction();
                 } else {
                     score += 10;
                 }
@@ -212,7 +225,6 @@
 
             gameArea.appendChild(element);
 
-            // Исчезновение через 1-1.5 сек
             setTimeout(() => {
                 if (gameArea.contains(element)) gameArea.removeChild(element);
             }, 1000 + Math.random() * 500);
@@ -221,18 +233,26 @@
         function showPrediction() {
             const pred = predictions[Math.floor(Math.random() * predictions.length)];
             predictionEl.textContent = pred;
+            console.log('Предсказание: ' + pred);
         }
 
         function endGame() {
             clearInterval(gameInterval);
             clearInterval(spawnInterval);
-            gameArea.innerHTML = ''; // Очистка всех элементов
+            gameArea.innerHTML = '';
+            gameArea.style.display = 'none';
+            info.style.display = 'none';
             finalScore.textContent = score;
-            if (!predictionEl.textContent) showPrediction(); // Всегда показывать предсказание в конце
+            if (!predictionEl.textContent) showPrediction();
             endScreen.style.display = 'block';
+            console.log('Игра окончена, финальный экран показан');
         }
 
-        restartBtn.addEventListener('click', startGame);
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', () => {
+            startScreen.style.display = 'block';
+            endScreen.style.display = 'none';
+        });
         shareBtn.addEventListener('click', () => {
             const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
             if (window.Telegram && window.Telegram.WebApp) {
@@ -241,9 +261,6 @@
                 alert('Поделитесь: ' + result);
             }
         });
-
-        // Старт игры
-        startGame();
     </script>
 </body>
 </html>
