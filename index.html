@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of 'Ladushki'</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+            touch-action: manipulation; /* Оптимизация для сенсорных экранов */
+        }
+        .header {
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 70%;
+            overflow: hidden;
+        }
+        .element {
+            position: absolute;
+            font-size: 40px;
+            cursor: pointer;
+            animation: fadeIn 0.5s ease-in-out;
+            user-select: none;
+            touch-action: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .golden { color: gold; font-size: 50px; }
+        .info {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .end-screen {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        /* Поддержка тем Telegram */
+        body.light {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        body.dark {
+            background-color: #1c1c1c;
+            color: #ffffff;
+        }
+        button.light { background-color: #007bff; color: white; }
+        button.dark { background-color: #0056b3; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">Game of 'Ladushki'</div>
+    <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Выбери свой торт</button>
+    <div class="info">
+        <span id="timer">30</span>
+        <span id="score">0</span>
+    </div>
+    <div class="game-area" id="gameArea"></div>
+    <div class="end-screen" id="endScreen">
+        <h2>Игра окончена!</h2>
+        <p>Ваш счет: <span id="finalScore"></span></p>
+        <p id="prediction"></p>
+        <button id="restart">Играть снова</button>
+        <button id="share">Поделиться</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            const theme = Telegram.WebApp.colorScheme;
+            document.body.classList.add(theme); // light или dark
+            document.querySelectorAll('button').forEach(btn => btn.classList.add(theme));
+        }
+
+        // Настройки игры
+        const gameDuration = 30; // секунды
+        const elements = ['🍰', '⭐', '❤️', '🧁'];
+        const predictions = [
+            'Сегодня ты точно заслужил торт!',
+            'Твоя удача слаще пирожного!',
+            'Звезды сулят вкусный день!',
+            'Сердце подсказывает: время для десерта!'
+        ];
+        let score = 0;
+        let timeLeft = gameDuration;
+        let gameInterval;
+        let spawnInterval;
+        let goldenCount = 0;
+        const maxGoldens = 3;
+
+        const gameArea = document.getElementById('gameArea');
+        const timerEl = document.getElementById('timer');
+        const scoreEl = document.getElementById('score');
+        const endScreen = document.getElementById('endScreen');
+        const finalScore = document.getElementById('finalScore');
+        const predictionEl = document.getElementById('prediction');
+        const restartBtn = document.getElementById('restart');
+        const shareBtn = document.getElementById('share');
+
+        function startGame() {
+            score = 0;
+            timeLeft = gameDuration;
+            goldenCount = 0;
+            scoreEl.textContent = score;
+            timerEl.textContent = timeLeft;
+            endScreen.style.display = 'none';
+            gameArea.innerHTML = '';
+            gameInterval = setInterval(updateTimer, 1000);
+            setSpawnRate(1000); // Начальная скорость: 1 элемент/сек
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+            // Увеличение скорости: от 1/сек до 3-4/сек
+            const progress = (gameDuration - timeLeft) / gameDuration;
+            const spawnDelay = 1000 - (progress * 750); // От 1000мс до ~250мс (4/сек)
+            setSpawnRate(spawnDelay);
+        }
+
+        function setSpawnRate(delay) {
+            clearInterval(spawnInterval);
+            spawnInterval = setInterval(spawnElement, delay);
+        }
+
+        function spawnElement() {
+            const isGolden = Math.random() < 0.1 && goldenCount < maxGoldens; // Шанс 10%, лимит 2-3
+            if (isGolden) goldenCount++;
+
+            const element = document.createElement('div');
+            element.classList.add('element');
+            if (isGolden) element.classList.add('golden');
+            element.textContent = elements[Math.floor(Math.random() * elements.length)];
+            element.style.left = `${Math.random() * 90}%`;
+            element.style.top = `${Math.random() * 90}%`;
+
+            element.addEventListener('click', () => {
+                if (isGolden) {
+                    score += 50;
+                    showPrediction();
+                } else {
+                    score += 10;
+                }
+                scoreEl.textContent = score;
+                gameArea.removeChild(element);
+            });
+
+            gameArea.appendChild(element);
+
+            // Исчезновение через 1-1.5 сек
+            setTimeout(() => {
+                if (gameArea.contains(element)) gameArea.removeChild(element);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function showPrediction() {
+            const pred = predictions[Math.floor(Math.random() * predictions.length)];
+            predictionEl.textContent = pred; // Показываем на финальном экране
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(spawnInterval);
+            finalScore.textContent = score;
+            endScreen.style.display = 'block';
+        }
+
+        restartBtn.addEventListener('click', startGame);
+        shareBtn.addEventListener('click', () => {
+            const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
+            if (window.Telegram && window.Telegram.WebApp) {
+                Telegram.WebApp.sendData(result); // Отправка результата боту для分享
+            } else {
+                alert('Поделитесь: ' + result); // Fallback
+            }
+        });
+
+        // Старт игры при загрузке
+        startGame();
+    </script>
+</body>
+</html>
