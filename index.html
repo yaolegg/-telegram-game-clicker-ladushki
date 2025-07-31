@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Open Sans', sans-serif;
-            font-style: normal; /* Ensure no italic */
+            font-style: normal;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,6 +20,7 @@
             transition: background-color 0.3s, color 0.3s;
             touch-action: manipulation;
             position: relative;
+            background: linear-gradient(to bottom, #ffe4e1, #fff5ee); /* Пастельный градиент для десертной темы */
         }
         .background-scatter {
             position: absolute;
@@ -32,17 +33,24 @@
         }
         .scatter-item {
             position: absolute;
-            opacity: 0.1;
+            opacity: 0.05; /* Ещё менее заметно, чтобы не рябило */
             font-style: normal;
+            animation: float 5s infinite ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
         .header {
             text-align: center;
             padding: 10px;
             font-size: 24px;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
             border-radius: 10px;
-            color: white;
+            color: #333;
             font-style: normal;
+            animation: fadeIn 1s ease;
         }
         .game-area {
             position: relative;
@@ -59,13 +67,14 @@
             touch-action: none;
             font-style: normal;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 1; transform: scale(1); }
-        }
         .golden {
-            color: gold;
+            color: #ffd700;
             font-size: 50px;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px gold; }
+            to { text-shadow: 0 0 10px gold; }
         }
         .info {
             display: flex;
@@ -83,14 +92,13 @@
             font-style: normal;
         }
         .start-screen {
-            display: block; /* Стартовый экран виден по умолчанию */
+            display: block;
         }
         .start-description {
             text-align: center;
             padding: 10px;
             font-size: 16px;
             font-style: normal;
-            /* Без подложки, простой текст */
         }
         button {
             padding: 10px 20px;
@@ -102,37 +110,41 @@
             transition: background-color 0.3s;
             font-family: 'Open Sans', sans-serif;
             font-style: normal;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
-            color: white;
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
+            color: #333;
         }
         .styled-text {
             padding: 10px;
-            background: linear-gradient(to right, #ff6699, #ffcc00); /* Единая подложка */
+            background: linear-gradient(to right, #ffc0cb, #ffd700); /* Пастельный градиент */
             border-radius: 10px;
-            color: white;
+            color: #333;
             margin: 10px 0;
             font-size: 18px;
             font-style: normal;
+            animation: fadeIn 1s ease;
+        }
+        #endScore, #endPrediction, #endFinal {
+            display: none;
         }
         /* Поддержка тем Telegram */
         body.light {
-            background-color: #ffffff;
-            color: #000000;
+            background: linear-gradient(to bottom, #ffe4e1, #fff5ee);
+            color: #333;
         }
         body.dark {
-            background-color: #1c1c1c;
-            color: #ffffff;
+            background: linear-gradient(to bottom, #4b0082, #2f4f4f);
+            color: #fff;
         }
-        button.light { background: linear-gradient(to right, #ff6699, #ffcc00); color: white; }
-        button.dark { background: linear-gradient(to right, #0056b3, #007bff); color: white; }
+        button.light { background: linear-gradient(to right, #ffc0cb, #ffd700); color: #333; }
+        button.dark { background: linear-gradient(to right, #4b0082, #2f4f4f); color: #fff; }
     </style>
 </head>
 <body>
     <div class="background-scatter" id="scatterBg"></div>
-    <div class="header">Ladushkiпен дәмді! / С Ladushki вкусно!</div>
+    <div class="header">Ladushkiпен дәмді!<br>С Ladushki вкусно!</div>
     <div class="start-screen" id="startScreen">
         <p class="start-description">Элементтерді бас, ұпай жина және торттарға тапсырыс беру үшін жеңілдік промокодын ал!<br>Кликай по элементам, набирай баллы и получи промокод на скидку для заказа тортов!</p>
-        <button id="start">Ойынды бастау / Начать игру</button>
+        <button id="start">Ойынды бастау<br>Начать игру</button>
     </div>
     <div class="info" id="info" style="display: none;">
         <span id="timer">30</span>
@@ -140,59 +152,147 @@
     </div>
     <div class="game-area" id="gameArea" style="display: none;"></div>
     <div class="end-screen" id="endScreen">
-        <p class="styled-text">Ваш счет: <span id="finalScore"></span></p>
-        <p id="prediction" class="styled-text"></p>
-        <button id="restart">Играть снова</button>
-        <button id="share">Поделиться</button>
+        <p id="endScore" class="styled-text">Сіздің ұпайларыңыз:<br>Ваши баллы: <span id="finalScore"></span></p>
+        <p id="endPrediction" class="styled-text"></p>
+        <div id="endFinal" style="display: none;">
+            <p class="styled-text" id="promo">Сіздің жеңілдік промокодыңыз тортқа тапсырыс беру үшін "LADTORTY25"!<br>Твой промокод со скидкой на заказ торта "LADTORTY25"!</p>
+            <button id="restart">Тағы ойнайық па?<br>Ещё сыграем?</button>
+            <button onclick="window.open('https://taplink.cc/ladushki_kz/m/', '_blank')">Промокодты қолдану<br>Применить промокод</button>
+        </div>
     </div>
 
     <script>
-        // Инициализация Telegram Web App с проверкой
-        let telegramReady = false;
+        // Динамическая генерация фона на загрузке
+        const scatterBg = document.getElementById('scatterBg');
+        const cakeCupcakeCount = 10;
+        const textCount = 3;
+        const cakeCupcakeEmojis = ['🍰', '🧁'];
+        const textEmoji = 'I❤️Ladushki!';
+
+        function randomPercent() {
+            return Math.random() * 90 + 5 + '%';
+        }
+
+        function randomSize(min, max) {
+            return Math.floor(Math.random() * (max - min) + min) + 'px';
+        }
+
+        // Add cakes & cupcakes
+        for (let i = 0; i < cakeCupcakeCount; i++) {
+            const item = document.createElement('div');
+            item.className = 'scatter-item';
+            item.textContent = cakeCupcakeEmojis[Math.floor(Math.random() * cakeCupcakeEmojis.length)];
+            item.style.left = randomPercent();
+            item.style.top = randomPercent();
+            item.style.fontSize = randomSize(30, 60);
+            scatterBg.appendChild(item);
+        }
+
+        // Add 'I❤️Ladushki!' texts
+        for (let i = 0; i < textCount; i++) {
+            const item = document.createElement('div');
+            item.className = 'scatter-item';
+            item.textContent = textEmoji;
+            item.style.left = randomPercent();
+            item.style.top = randomPercent();
+            item.style.fontSize = randomSize(20, 40);
+            scatterBg.appendChild(item);
+        }
+
+        // Инициализация Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
             const theme = Telegram.WebApp.colorScheme;
             document.body.classList.add(theme);
             document.querySelectorAll('button').forEach(btn => btn.classList.add(theme));
-            telegramReady = true;
-        } else {
-            console.log('Telegram Web App not detected, running in fallback mode');
         }
 
         // Настройки игры
         const gameDuration = 30;
         const elements = ['🍰', '⭐', '❤️', '🧁'];
         const predictions = [
-            'Сегодня ты точно заслужил торт!',
-            'Твоя удача слаще пирожного!',
-            'Звезды сулят вкусный день!',
-            'Сердце подсказывает: время для десерта!'
+            'Бүгін сен Ladushki-ден тортқа лайықсың!<br>Сегодня ты точно заслужил торт от Ladushki!',
+            'Сенің сәттілігің Ladushki пирожныйынан тәтті!<br>Твоя удача слаще пирожного от Ladushki!',
+            'Жұлдыздар Ladushki-мен дәмді күн уәде етеді!<br>Звезды сулят вкусный день с Ladushki!',
+            'Жүрек Ladushki десерті уақыты келді деп айтады!<br>Сердце подсказывает: время для десерта с Ladushki!',
+            'Сен бүгін Ladushki торттарының патшасысың!<br>Ты — король тортов Ladushki сегодня!',
+            'Позитив және Ladushki тәттіліктері сені күтеді!<br>Позитив и сладости Ladushki ждут тебя!',
+            'Ladushki торт — бұл сенің бақытты билетің!<br>Торт Ladushki — это твой счастливый билет!',
+            'Күл, десерт Ladushki жақында!<br>Улыбнись, десерт Ladushki уже на подходе!',
+            'Сен Ladushki кликтер мен тәттіліктердің шеберісің!<br>Ты мастер кликов и сладостей Ladushki!',
+            'Бүгінгі күн Ladushki-де толық крем!<br>Сегодняшний день — сплошной крем с Ladushki!',
+            'Алтын элемент Ladushki-ден сәттілік әкеледі!<br>Золотой элемент приносит удачу от Ladushki!',
+            'Пирожные Ladushki-де сен жеңімпазсың деп сыбырлайды!<br>Пирожные шепчут: ты победитель с Ladushki!',
+            'Ladushki-дің тәтті әлемі сені шақырады!<br>Сладкий мир Ladushki зовёт тебя!',
+            'Бүгін Ladushki-мен бірге десерттік шытырман!<br>Сегодня десертное приключение с Ladushki!',
+            'Сенің күнің Ladushki торттарымен жарқырайды!<br>Твой день засияет с тортами Ladushki!',
+            'Ladushki-дің сиқыры сенің кликтеріңде!<br>Магия Ladushki в твоих кликах!',
+            'Тәтті жеңіс Ladushki-мен бірге!<br>Сладкая победа вместе с Ladushki!',
+            'Ladushki-дің жүректері сенің үшін соғады!<br>Сердечки Ladushki бьются для тебя!',
+            'Бүгінгі сәттілік Ladushki пирожныйларынан!<br>Удача сегодня из пирожных Ladushki!',
+            'Ladushki-дің жұлдыздары сенің жолыңды жарық етеді!<br>Звёзды Ladushki осветят твой путь!',
+            'Десерттік армандар Ladushki-мен орындалады!<br>Десертные мечты сбываются с Ladushki!',
+            'Сен Ladushki-дің ең жақсы ойыншысысың!<br>Ты лучший игрок Ladushki!'
         ];
         let score = 0;
         let timeLeft = gameDuration;
         let gameInterval;
         let spawnInterval;
         let goldenCount = 0;
-        const maxGoldens = 3;
+        let goldenTimes = [10, 20, 25];
+
+        // Класс для рандомайзера предсказаний без повторений
+        class PredictionRandomizer {
+            constructor(predictions) {
+                this.predictions = predictions;
+                this.available = [];
+                this.reset();
+            }
+
+            reset() {
+                this.available = Array.from({length: this.predictions.length}, (_, i) => i);
+                this.shuffle(this.available);
+            }
+
+            shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            getPrediction() {
+                if (this.available.length === 0) {
+                    this.reset();
+                }
+                const idx = this.available.pop();
+                return this.predictions[idx];
+            }
+        }
+
+        const randomizer = new PredictionRandomizer(predictions);
 
         const gameArea = document.getElementById('gameArea');
         const timerEl = document.getElementById('timer');
         const scoreEl = document.getElementById('score');
         const endScreen = document.getElementById('endScreen');
-        const finalScore = document.getElementById('finalScore');
-        const predictionEl = document.getElementById('prediction');
-        const restartBtn = document.getElementById('restart');
-        const shareBtn = document.getElementById('share');
+        const endScore = document.getElementById('endScore');
+        const endPrediction = document.getElementById('endPrediction');
+        const endFinal = document.getElementById('endFinal');
         const startScreen = document.getElementById('startScreen');
         const info = document.getElementById('info');
+        const finalScore = document.getElementById('finalScore');
+        const predictionEl = document.getElementById('prediction');
         const startBtn = document.getElementById('start');
+        const restartBtn = document.getElementById('restart');
 
         function startGame() {
-            console.log('Starting game...');
+            console.log('Игра начата');
             score = 0;
             timeLeft = gameDuration;
             goldenCount = 0;
+            goldenTimes = [10, 20, 25];
             scoreEl.textContent = score;
             timerEl.textContent = timeLeft;
             endScreen.style.display = 'none';
@@ -203,9 +303,6 @@
             predictionEl.textContent = '';
             gameInterval = setInterval(updateTimer, 1000);
             setSpawnRate(1000);
-            // Немедленный спавн для теста запуска
-            spawnElement(false);
-            console.log('Game started, intervals set');
         }
 
         function updateTimer() {
@@ -213,34 +310,40 @@
             timerEl.textContent = timeLeft;
             if (timeLeft <= 0) {
                 endGame();
+                return;
             }
-            const progress = (gameDuration - timeLeft) / gameDuration;
+            const elapsed = gameDuration - timeLeft;
+            const progress = elapsed / gameDuration;
             const spawnDelay = 1000 - (progress * 750);
             setSpawnRate(spawnDelay);
-            console.log('Timer updated, time left: ' + timeLeft);
+
+            if (goldenTimes.includes(elapsed) && goldenCount < goldenTimes.length) {
+                spawnElement(true);
+                console.log('Золотой элемент спавнен на ' + elapsed + ' сек');
+            }
         }
 
         function setSpawnRate(delay) {
             clearInterval(spawnInterval);
-            spawnInterval = setInterval(spawnElement, delay);
-            console.log('Spawn rate set to ' + delay + 'ms');
+            spawnInterval = setInterval(() => spawnElement(false), delay);
         }
 
-        function spawnElement() {
-            const isGolden = Math.random() < 0.1 && goldenCount < maxGoldens;
+        function spawnElement(forceGolden = false) {
+            const isGolden = forceGolden || (Math.random() < 0.1 && goldenCount < goldenTimes.length);
             if (isGolden) goldenCount++;
 
             const element = document.createElement('div');
             element.classList.add('element');
             if (isGolden) element.classList.add('golden');
             element.textContent = elements[Math.floor(Math.random() * elements.length)];
+
             element.style.left = `${Math.random() * 90}%`;
             element.style.top = `${Math.random() * 90}%`;
 
             element.addEventListener('click', () => {
                 if (isGolden) {
                     score += 50;
-                    predictionEl.textContent = predictions[Math.floor(Math.random() * predictions.length)];
+                    showPrediction();
                 } else {
                     score += 10;
                 }
@@ -253,7 +356,12 @@
             setTimeout(() => {
                 if (gameArea.contains(element)) gameArea.removeChild(element);
             }, 1000 + Math.random() * 500);
-            console.log('Element spawned');
+        }
+
+        function showPrediction() {
+            const pred = randomizer.getPrediction();
+            predictionEl.textContent = pred;
+            console.log('Предсказание: ' + pred);
         }
 
         function endGame() {
@@ -264,20 +372,31 @@
             info.style.display = 'none';
             finalScore.textContent = score;
             endScreen.style.display = 'block';
-            console.log('Game ended');
+
+            // Последовательная анимация
+            endScore.style.display = 'block';
+            endPrediction.style.display = 'none';
+            endFinal.style.display = 'none';
+
+            setTimeout(() => {
+                showPrediction(); // Генерируем пожелание
+                endScore.style.display = 'none';
+                endPrediction.style.display = 'block';
+            }, 3000); // 3 секунды на баллы
+
+            setTimeout(() => {
+                endPrediction.style.display = 'none';
+                endFinal.style.display = 'block';
+            }, 6000); // Ещё 3 секунды на пожелание
+
+            console.log('Игра окончена, финальный экран показан');
         }
 
-        restartBtn.addEventListener('click', startGame);
-        shareBtn.addEventListener('click', () => {
-            const result = `Мой счет в Game of 'Ladushki': ${score}! ${predictionEl.textContent}`;
-            if (telegramReady) {
-                Telegram.WebApp.sendData(result);
-            } else {
-                alert('Поделитесь: ' + result);
-            }
-        });
-
         startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', () => {
+            startScreen.style.display = 'block';
+            endScreen.style.display = 'none';
+        });
     </script>
 </body>
 </html>
